@@ -35,12 +35,12 @@ jobs:
     - name: Terraform Validate
       id: validate
       run: terraform validate 
-      working-directory: aayu
+      
     
     - name: Terraform Plan
       id: plan
       run: terraform plan 
-      working-directory: aayu
+     
       continue-on-error: true
 
 
