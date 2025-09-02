@@ -1,0 +1,48 @@
+name: "basic infra pipeline"
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  terraform-init-plan:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5.0.0
+    - name: Install Terraform
+      uses: little-core-labs/install-terraform@v2.0.0
+      
+    - name: Azure Login
+      uses: Azure/login@v2.3.0
+      with: 
+        client-id: 221f5f95-b59d-4dff-9af2-46588aad1d84
+        tenant-id: ccd94d3f-bbc6-4eb2-b7a1-b35b1d9e7049
+        subscription-id: b23d929c-5d14-4285-a3cd-840ec9c55cde
+        
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.6
+
+    - name: Terraform Init
+      id: init
+      run: terraform init 
+      working-directory: terraform/main.tf
+      
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate 
+      working-directory: terraform
+    
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color -input=false
+      continue-on-error: true
+      working-directory: terraform
+
+           
+    
+  
