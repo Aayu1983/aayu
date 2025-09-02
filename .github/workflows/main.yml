@@ -35,13 +35,49 @@ jobs:
     - name: Terraform Validate
       id: validate
       run: terraform validate 
-      
     
     - name: Terraform Plan
       id: plan
       run: terraform plan 
-     
       continue-on-error: true
+
+  terraform-apply:
+    needs: terraform-init-plan
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5.0.0
+    - name: Install Terraform
+      uses: little-core-labs/install-terraform@v2.0.0
+      
+    - name: Azure Login
+      uses: Azure/login@v2.3.0
+      with: 
+           client-id: ${{ secrets.AZURE_CLIENT_ID }}
+           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.6
+
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+    - name: Terraform Apply
+      id: apply
+      run: terraform apply -auto-approve
+
+  
+
+
+
 
 
 
